@@ -1,0 +1,389 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Implementing CI in Flutter - Angga Arifandi</title>
+
+		<!-- Bootstrap core CSS -->
+		<link href="dist/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/sky.css" id="theme">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+		<link rel="icon" href="images/flutter_icon.png" type="image/png">
+
+		<style>
+			.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+						  text-transform: none;
+				  }
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-transition="slide">
+						<h6 class="medium-text">
+							Flutter Jakarta Meetup #5
+						</h6>
+						<h4 class="big-text">
+							Implementing CI for your Flutter project
+						</h4>
+						<h6 class="small-text">
+							Angga Arifandi - Sept 2020
+						</h6>
+				</section>
+				<section data-transition="slide">
+					<section data-auto-animate>
+						<div class="row">
+							<div class="col-lg-6 align-middle">
+								<img src="images/angga_small.png"/>
+							</div>
+							<div class="col-lg-6 align-middle">
+								<h6 class="medium-big-text">
+									Angga Dwi Arifandi
+								</h6>
+								<img class="align-middle" src="images/gde_logo.png" height="50"/>
+								<span class="medium-text">
+									Google Dev Expert - Flutter
+								</span><br>
+								<img src="images/android.png" width="50">
+								<img src="images/flutter.png" width="200"/>
+								<img src="images/python.png" width="50"/>
+							</div>
+						</div>
+					</section>
+					<section data-auto-animate>
+						<h6>Social Media</h6>
+						<img class="align-middle" src="https://image.flaticon.com/icons/png/512/25/25231.png" height="50" />
+						<span>blackmenthor</span>
+						<br>
+						<img class="align-middle" src="https://miro.medium.com/max/390/1*emiGsBgJu2KHWyjluhKXQw.png" height="50" />
+						<span>@angga.arifandi</span><br>
+						<img class="align-middle" src="https://www.freepnglogos.com/uploads/twitter-logo-png/twitter-logo-vector-png-clipart-1.png" height="50" />
+						<span>@anggadwia_</span><br>
+						<img class="align-middle" src="https://www.freepnglogos.com/uploads/logo-gmail-png/logo-gmail-png-gmail-icon-download-png-and-vector-1.png" height="50" />
+						<span>anggadwiarifandi96@gmail.com</span><br>
+					</section>
+				</section>
+				<section data-transition="zoom">
+					<section data-auto-animate>
+						<h3>
+							Quality of a Mobile Apps
+						</h3>
+					</section>
+					<section data-auto-animate>
+						<h3>
+							Companies that relies on Mobile Apps
+						</h3>
+						<img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Grab_%28application%29_logo.svg/1200px-Grab_%28application%29_logo.svg.png"
+						height="100" />
+						<img src="https://driver.go-jek.com/servlet/rtaImage?eid=ka00I000000GgOu&feoid=00N0I00000Jq9fd&refid=0EM0I0000021GKi" 
+						height="100" /><br>
+						<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logo_ovo_purple.svg/1280px-Logo_ovo_purple.svg.png" 
+						height="100" />
+					</section>
+					<section data-auto-animate>
+						<h3>
+							App Crash
+						</h3>
+						<img src="https://developer.android.com/topic/performance/images/crash-example-framed.png"
+						/>
+					</section>
+					<section data-auto-animate>
+						<img src="https://media.giphy.com/media/TJawtKM6OCKkvwCIqX/giphy.gif" height="500" />
+					</section>
+				</section>
+				<section data-transition="zoom">
+					<section data-auto-animate>
+						<h3>
+							Challenge for maintaining quality
+						</h3>
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Challenges
+						</h6>
+						<ul>
+							<li class="fragment fade-in">
+								<h6>
+									Feature are always added/changing
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Code is maintained by multiple engineers across teams
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									We can't test whole app on every release
+								</h6>
+							</li>
+						</ul>
+					</section>
+					<section>
+						<h3>
+							Solution?
+						</h3>
+						<h6 class="fragment fade-in">
+							We automate those process
+						</h6>
+					</section>
+				</section>
+				<section data-transition="zoom">
+					<section data-auto-animate>
+						<h3>
+							Continuous Integration
+						</h3>
+					</section>
+					<section>
+						<h3>
+							Ultimate Goal
+						</h3>
+						<h6 class="fragment fade-in">
+							Making sure we don't introduce regression when developing a feature
+						</h6>
+					</section>
+					<section>
+						<h3>
+							How?
+						</h3>
+						<h6 class="fragment fade-in">
+							We will test if the new code integrates well with the current codebase, before we ship
+						</h6>
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Common CI Flow
+						</h6>
+						<ol>
+							<li class="fragment fade-in">
+								<h6>
+									After working on a feature, Dev created a PR
+								  </h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Check, if the target branch is important branch
+								  </h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Check compatibility of the origin branch to the target
+								  </h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Run tests to ensure there are no regression
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									If it's passing, then PR will be ok to merge
+								</h6>
+							</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<img src="images/flutter_logo.png" width="400"/>
+						<h3>
+							Knowing that, how to implement in Flutter?
+						</h3>
+					</section>
+				</section>
+				<section data-transition="zoom">
+					<section data-auto-animate>
+						<h6>
+							Implementing CI in Flutter with Github Actions
+						</h6>
+						<a href="http://bit.ly/FlutterCISample" target="_new">
+							<h6>
+								bit.ly/FlutterCISample
+							</h6>
+						</a>
+					</section>
+					<section data-auto-animate>
+						<img src="images/ci_folder.png" />
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Libs used
+						</h6>
+						<img src="images/flutter_action.png" />
+					</section>
+					<section data-auto-animate>
+						<h6>
+							CI Flow
+						</h6>
+						<ol>
+							<li class="fragment fade-in">
+								<h6>
+									Only run CI on PR to develop and master
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Run Flutter Unit build & unit test
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									IF ok, continue to run Android Native unit test
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Also, IF Flutter unit test ok, continue to run iOS Native unit test
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									If everything is good, then pass.
+								</h6>
+							</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Setup Code
+						</h6>
+						<img src="images/setup.png" />
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Run Flutter Unit Test
+						</h6>
+						<img src="images/flutter_test.png" />
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Run Android Unit Test
+						</h6>
+						<img src="images/android_test.png"
+						height="600" />
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Run iOS Unit Test
+						</h6>
+						<img src="images/ios_test.png" 
+						height="600"/>
+					</section>
+					<section data-auto-animate>
+						<h6>
+							In case of Success
+						</h6>
+						<img src="images/success.png" />
+					</section>
+					<section data-auto-animate>
+						<h6>
+							In case of Failure
+						</h6>
+						<img src="images/failure.png" />
+					</section>
+					<section data-auto-animate>
+						<h6>
+							E-mail in case of failure
+						</h6>
+						<img src="images/failure_email.png" />
+					</section>
+				</section>
+				<section data-transition="zoom">
+					<section data-auto-animate>
+						<h3>
+							Github Actions's limitation
+						</h3>
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Limitation
+						</h6>
+						<img src="images/limitation_1.png" />
+						<a href="https://docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration" target="_new">
+							<span class="small-text">
+								docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration
+							</span>
+						</a>
+					</section>
+					<section data-auto-animate>
+						<h6>
+							Limitation
+						</h6>
+						<img src="images/limitation_2.png" />
+						<a href="https://docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration" target="_new">
+							<span class="small-text">
+								docs.github.com/en/free-pro-team@latest/actions/reference/usage-limits-billing-and-administration
+							</span>
+						</a>
+					</section>
+				</section>
+				<section data-transition="zoom">
+					<section data-auto-animate>
+						<h3>
+							Further Exploration
+						</h3>
+					</section>
+					<section>
+						<h6>
+							Exploration
+						</h6>
+						<ul>
+							<li class="fragment fade-in">
+								<h6>
+									Device testing (headless emulator)
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Run test only if code on Android & iOS folder is changed
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Send Slack message in case of failure
+								</h6>
+							</li>
+							<li class="fragment fade-in">
+								<h6>
+									Continuous Deployment
+								</h6>
+							</li>
+						</ul>
+					</section>
+				</section>
+				<section data-auto-animate>
+					<h6>
+						Thank you, and keep spreading positivity!
+					</h6>
+					<img src="https://media.giphy.com/media/nXxOjZrbnbRxS/giphy.gif" height="400"/>
+					<h6>
+						Any questions?<br>Slides: 128.199.203.128:8002
+					</h6>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/jquery/jquery.min.js"></script>
+		<script src="dist/bootstrap/js/bootstrap.bundle.min.js"></script>
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
